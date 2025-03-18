@@ -1,1 +1,0 @@
-export { openOrCreateNote } from "./popup";

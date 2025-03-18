@@ -1,24 +1,162 @@
-<div style="margin-top: -40px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⏫ Remember to enable! <!-- Meant for Obsidian community plugin list view. --></div>
+# Inline Worker Plugin for esbuild 0.17+
 
-# Obsidian ZotLit
+This is a plugin for [esbuild](https://esbuild.github.io) which allows you to import module as bundled script text for usage in Web Workers. Support watch mode, and custom worker import pattern and build options.
 
-[![GitHub stars](https://custom-icon-badges.demolab.com/github/stars/PKM-er/obsidian-zotlit?logo=star)](https://github.com/PKM-er/obsidian-zotlit/stargazers "GitHub stars") [![GitHub issues](https://custom-icon-badges.demolab.com/github/issues-raw/PKM-er/obsidian-zotlit?logo=issue)](https://github.com/PKM-er/obsidian-zotlit/issues "GitHub issues") [![repo license](https://custom-icon-badges.demolab.com/github/license/PKM-er/obsidian-zotlit?logo=law&logoColor=white)](https://github.com/PKM-er/obsidian-zotlit/blob/main/LICENSE "repo license") [![current obsidian plugin version](https://custom-icon-badges.demolab.com/badge/dynamic/json?color=8b6cef&label=obsidian%20plugin&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Faidenlx%2Fobsidian-zotero%2Fmaster%2Fapp%2Fobsidian%2Fmanifest.json&logo=obsidian-full)](https://obzt.aidenlx.top/getting-started/install/obsidian "open obsidian plugin page") [![current zotero plugin version](https://custom-icon-badges.demolab.com/badge/dynamic/json?color=bc3a3c&label=zotero%20plugin&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Faidenlx%2Fobsidian-zotero%2Fmaster%2Fapp%2Fzotero%2Fpackage.json&logo=zotero-32)](https://obzt.aidenlx.top/getting-started/install/zotero "open zotero plugin page")
+Special thanks to [esbuild-plugin-inline-import](https://github.com/mitschabaude/esbuild-plugin-inline-worker) for the idea.
 
-ZotLit is a third-party project that aims to facilitate the integration between [Obsidian.md](https://obsidian.md) and [Zotero](https://www.zotero.org), by providing a set of community plugins for both Obsidian and Zotero.
+## Installation
 
-- [Full Documentation](https://obzt.aidenlx.top/)
-- [中文文档](https://obzt.aidenlx.top/zh-CN/)
+```sh
+npm install -D @aidenlx/esbuild-plugin-inline-worker
+-- or --
+yarn add -D @aidenlx/esbuild-plugin-inline-worker
+-- or --
+pnpm add -D @aidenlx/esbuild-plugin-inline-worker
+```
 
-[![open in obsidian](https://custom-icon-badges.demolab.com/badge/-Open%20In%20Obsidian-d4d4d4?style=for-the-badge&logo=obsidian-full)](https://obsidian.md/plugins?id=zotlit "open in obsidian")
+## Usage
 
-Disclaimer: The plugins in this project is manitained by third-party developer, who is not affiliated with Obsidian or Zotero. This means that they may be broken at any time due to Zotero and/or Obsidian updates. Although they are not intended to perform any write operations to your Zotero database, there are still risks of data-loss. Therefore, please make proper backup for your data before and when using this plugin, especially when you are using beta version.
+By default the plugin intercepts all `worker:*` imports and replaces them with the bundled script text. For example:
 
-If you have any questions or suggestions, please feel free to [open a discussion](https://github.com/PKM-er/obsidian-zotlit/discussions/new/choose) or [create an issue](https://github.com/PKM-er/obsidian-zotlit/issues/new).
+```js
+import WorkerCode from "worker:./worker.js";
+// you can use utils to create a worker from the script text
+import { fromScriptText } from "@aidenlx/esbuild-plugin-inline-worker/utils";
 
-## Compatibility
+const worker = fromScriptText(
+  WorkerCode,
+  /** worker options */ { name: "i'm a worker" }
+);
+```
 
-The required API feature for latest obsidian plugin is only available for:
-[![minimal obsidian version](https://custom-icon-badges.demolab.com/badge/dynamic/json?color=8b6cef&label=obsidian&prefix=^&query=minAppVersion&url=https%3A%2F%2Fraw.githubusercontent.com%2Faidenlx%2Fobsidian-zotero%2Fmaster%2Fapp%2Fobsidian%2Fmanifest.json&logo=obsidian-full)](https://obsidian.md "minimal obsidian version")
+To enable the plugin, add it to the `plugins` option of esbuild:
 
-The latest zotero plugin currently supports:
-[![Zotero 6](https://custom-icon-badges.demolab.com/badge/zotero-6-bc3a3c?logo=zotero-32) ![Zotero 7](https://custom-icon-badges.demolab.com/badge/zotero-7-bc3a3c?logo=zotero-32)](https://www.zotero.org/download/ "supported zotero version")
+```js
+import { build } from "esbuild";
+import inlineWorker from "@aidenlx/esbuild-plugin-inline-worker";
+
+await build({
+  // ...other options
+  plugins: [inlineWorker()],
+});
+```
+
+If you are using TypeScript, you can create a file named `inline-worker.d.ts` in your source code folder with the following content :
+
+```ts
+declare module "worker:*" {
+  const inlineWorker: string;
+  export default inlineWorker;
+}
+```
+
+### Watch mode support
+
+If you are using esbuild v0.17+ in watch mode, you can use the `watch` option to enable watch mode support:
+
+```js
+import { build } from "esbuild";
+import inlineWorker from "@aidenlx/esbuild-plugin-inline-worker";
+
+// you can replace this with your own build mode detection logic
+const isProd = process.env.NODE_ENV === "production";
+
+/** @type import("esbuild").BuildOptions */
+const commonOptions = {
+  // ...
+};
+
+/** @type import("esbuild").BuildOptions */
+const mainOptions = {
+  ...commonOptions,
+  plugins: [inlineWorker({ watch: !isProd })],
+};
+
+if (!isProd) {
+  // watch mode
+  const ctx = await context(mainOptions);
+  try {
+    await ctx.watch();
+  } catch (err) {
+    console.error(err);
+    await cleanup();
+  }
+  process.on("SIGINT", cleanup);
+  // clean up properly before exit via ctrl+c
+  async function cleanup() {
+    await ctx.dispose();
+  }
+} else {
+  // build mode
+  await build(mainOptions);
+}
+```
+
+### Custom Worker Import Pattern
+
+You can use the `filter` option to customize the import pattern. For example, the default pattern `worker:*` works like this:
+
+```js
+await build({
+  // ...other options
+  plugins: [
+    inlineWorkerPlugin({
+      filter: {
+        pattern: /^worker:/,
+        // if you don't need to transform the path, you can just ignore this option
+        transform: (path, pattern) => path.replace(pattern, ""),
+      },
+    }),
+  ],
+});
+```
+
+To only intercept `*.worker.js` imports, you can use:
+
+```js
+await build({
+  // ...other options
+  plugins: [inlineWorkerPlugin({ filter: { pattern: /\.worker\.js$/ } })],
+});
+```
+
+Remember to change the `inline-worker.d.ts` file to match the new pattern:
+
+```ts
+declare module "*.worker.js" {
+  const inlineWorker: string;
+  export default inlineWorker;
+}
+```
+
+### Custom Build Options
+
+You can pass a function to the `buildOptions` option to customize the build options for each worker file:
+
+```js
+await build({
+  // ...other options
+  plugins: [
+    inlineWorkerPlugin({
+      // `entryPoint` point to the full path to the worker file
+      // `path` is the path used in `import` statement,
+      // and it's relative to `resolveDir`
+      // `resolve` method is used by esbuild to resolve the import paths
+      buildOptions: ({ path, resolveDir, entryPoint }, resolve) => {
+        let tsconfig = "tsconfig.worker.json";
+        if (path.endsWith("worker-special.js")) {
+          // use a different tsconfig file for different worker files
+          tsconfig = "tsconfig.worker-special.json";
+        } else if (path.startsWith("@/worker/")) {
+          // get the tsconfig file next to the worker file
+          tsconfig = join(entryPoint, "..", "tsconfig.json");
+        }
+        return {
+          sourcemap: !isProd ? "inline" : undefined,
+          tsconfig,
+        };
+      },
+    }),
+  ],
+});
+```
