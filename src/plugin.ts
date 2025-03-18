@@ -6,13 +6,13 @@ import { tmpdir } from "os";
 import { basename, join } from "path";
 import esbuild from "esbuild";
 import type { BuildOptions, PluginBuild, Plugin, BuildContext } from "esbuild";
-import { nanoid } from "nanoid/async";
+import { nanoid } from "nanoid";
 
 const namespace = "inline-worker";
-const toUniqueFilename = async (/** @type {string} */ path: string) => {
+const toUniqueFilename = (/** @type {string} */ path: string) => {
   const base = basename(path).split("."),
     ext = base.pop();
-  return `${base.join(".")}_${await nanoid(5)}.${ext}`;
+  return `${base.join(".")}_${nanoid(5)}.${ext}`;
 };
 
 interface WorkerOptions {
@@ -99,7 +99,7 @@ export const inlineWorkerPlugin = ({
           });
           const id =
             workerEntryPoints[entryPoint] ??
-            (workerEntryPoints[entryPoint] = await toUniqueFilename(
+            (workerEntryPoints[entryPoint] = toUniqueFilename(
               entryPoint,
             ));
 
