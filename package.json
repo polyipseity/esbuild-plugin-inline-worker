@@ -1,11 +1,16 @@
 {
-  "name": "@aidenlx/esbuild-plugin-inline-worker",
+  "name": "@polyipseity/esbuild-plugin-inline-worker",
+  "bugs": {
+    "url": "https://github.com/polyipseity/esbuild-plugin-inline-worker/issues"
+  },
+  "homepage": "https://github.com/polyipseity/esbuild-plugin-inline-worker#readme",
   "description": "Esbuild inline web workers loader",
   "version": "1.0.1",
   "keywords": [
     "workers",
     "esbuild"
   ],
+  "author": "AidenLx, polyipseity",
   "files": [
     "dist"
   ],

@@ -1,5 +1,7 @@
 # Inline Worker Plugin for esbuild 0.17+
 
+_forked from [PKM-er/obsidian-zotlit](https://github.com/PKM-er/obsidian-zotlit/tree/160842953d29520ad8507f99ba5e1dd51ae75885/utils/esbuild-inline-worker)_
+
 This is a plugin for [esbuild](https://esbuild.github.io) which allows you to import module as bundled script text for usage in Web Workers. Support watch mode, and custom worker import pattern and build options.
 
 Special thanks to [esbuild-plugin-inline-import](https://github.com/mitschabaude/esbuild-plugin-inline-worker) for the idea.
@@ -7,11 +9,11 @@ Special thanks to [esbuild-plugin-inline-import](https://github.com/mitschabaude
 ## Installation
 
 ```sh
-npm install -D @aidenlx/esbuild-plugin-inline-worker
+npm install -D @polyipseity/esbuild-plugin-inline-worker
 -- or --
-yarn add -D @aidenlx/esbuild-plugin-inline-worker
+yarn add -D @polyipseity/esbuild-plugin-inline-worker
 -- or --
-pnpm add -D @aidenlx/esbuild-plugin-inline-worker
+pnpm add -D @polyipseity/esbuild-plugin-inline-worker
 ```
 
 ## Usage
@@ -21,7 +23,7 @@ By default the plugin intercepts all `worker:*` imports and replaces them with t
 ```js
 import WorkerCode from "worker:./worker.js";
 // you can use utils to create a worker from the script text
-import { fromScriptText } from "@aidenlx/esbuild-plugin-inline-worker/utils";
+import { fromScriptText } from "@polyipseity/esbuild-plugin-inline-worker/utils";
 
 const worker = fromScriptText(
   WorkerCode,
@@ -33,7 +35,7 @@ To enable the plugin, add it to the `plugins` option of esbuild:
 
 ```js
 import { build } from "esbuild";
-import inlineWorker from "@aidenlx/esbuild-plugin-inline-worker";
+import inlineWorker from "@polyipseity/esbuild-plugin-inline-worker";
 
 await build({
   // ...other options
@@ -56,7 +58,7 @@ If you are using esbuild v0.17+ in watch mode, you can use the `watch` option to
 
 ```js
 import { build } from "esbuild";
-import inlineWorker from "@aidenlx/esbuild-plugin-inline-worker";
+import inlineWorker from "@polyipseity/esbuild-plugin-inline-worker";
 
 // you can replace this with your own build mode detection logic
 const isProd = process.env.NODE_ENV === "production";

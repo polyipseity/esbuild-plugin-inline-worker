@@ -1,14 +1,21 @@
 {
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"],
   "compilerOptions": {
     "allowJs": true,
-    "lib": ["ES2018", "DOM"],
+    "declaration": true,
+    "declarationMap": true,
+    "lib": [
+      "ES2018",
+      "DOM"
+    ],
     "module": "Node16",
     "moduleResolution": "node16",
-    "skipLibCheck": true,
-    "declaration": true,
     "outDir": "dist",
-    "declarationMap": true
-  }
+    "skipLibCheck": true
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "src/**/*.ts"
+  ]
 }
