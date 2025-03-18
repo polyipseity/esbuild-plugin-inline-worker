@@ -29,7 +29,7 @@
     "esbuild": "^0.17.4"
   },
   "dependencies": {
-    "nanoid": "~4.0.0"
+    "nanoid": "~5.0.9"
   },
   "devDependencies": {
     "typescript": "~5.1.6",
