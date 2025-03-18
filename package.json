@@ -1,39 +1,39 @@
 {
-  "name": "@polyipseity/esbuild-plugin-inline-worker",
+  "author": "AidenLx, polyipseity",
   "bugs": {
     "url": "https://github.com/polyipseity/esbuild-plugin-inline-worker/issues"
-  },
-  "homepage": "https://github.com/polyipseity/esbuild-plugin-inline-worker#readme",
-  "description": "Esbuild inline web workers loader",
-  "version": "1.0.1",
-  "keywords": [
-    "workers",
-    "esbuild"
-  ],
-  "author": "AidenLx, polyipseity",
-  "files": [
-    "dist"
-  ],
-  "license": "MIT",
-  "type": "module",
-  "main": "./dist/plugin.js",
-  "types": "./dist/plugin.d.ts",
-  "exports": {
-    ".": "./dist/plugin.js",
-    "./utils": "./dist/utils.js"
-  },
-  "scripts": {
-    "build": "rimraf dist && tsc"
-  },
-  "peerDependencies": {
-    "esbuild": "^0.17.4"
   },
   "dependencies": {
     "nanoid": "~4.0.0"
   },
+  "description": "Esbuild inline web workers loader",
   "devDependencies": {
-    "typescript": "~5.1.6",
     "@types/node": "^17.0.10",
-    "rimraf": "^3.0.2"
-  }
+    "rimraf": "^3.0.2",
+    "typescript": "~5.1.6"
+  },
+  "exports": {
+    ".": "./dist/plugin.js",
+    "./utils": "./dist/utils.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/polyipseity/esbuild-plugin-inline-worker#readme",
+  "keywords": [
+    "workers",
+    "esbuild"
+  ],
+  "license": "MIT",
+  "main": "./dist/plugin.js",
+  "name": "@polyipseity/esbuild-plugin-inline-worker",
+  "peerDependencies": {
+    "esbuild": "^0.17.4"
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc"
+  },
+  "type": "module",
+  "types": "./dist/plugin.d.ts",
+  "version": "1.0.1"
 }
