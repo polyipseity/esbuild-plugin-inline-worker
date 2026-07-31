@@ -31,7 +31,8 @@
     "esbuild": ">=0.17.0"
   },
   "scripts": {
-    "build": "rimraf dist && tsc"
+    "build": "rimraf dist && tsc",
+    "clean": "rimraf dist"
   },
   "type": "module",
   "types": "./dist/plugin.d.ts",
